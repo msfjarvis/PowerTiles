@@ -1,8 +1,10 @@
 package dev.msfjarvis.powertiles
 
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
+import android.provider.Settings
 import android.service.controls.Control
 import android.service.controls.ControlsProviderService
 import android.service.controls.DeviceTypes
@@ -16,21 +18,26 @@ import java.util.function.Consumer
 
 class ControlsService : ControlsProviderService() {
     private lateinit var updatePublisher: ReplayProcessor<Control>
-
-    override fun createPublisherForAllAvailable(): Flow.Publisher<Control> {
-        val controls = mutableListOf<Control>()
-        val i = Intent()
-        val pi = PendingIntent.getActivity(
-            this,
+    private val settingsPendingIntent by lazy {
+        val context: Context = baseContext
+        val i = Intent(Settings.ACTION_SETTINGS)
+        PendingIntent.getActivity(
+            context,
             CONTROL_REQUEST_CODE,
             i,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val control = Control.StatelessBuilder(CONTROL_BUTTON_ID, pi)
+    }
+
+    override fun createPublisherForAllAvailable(): Flow.Publisher<Control> {
+        val controls = mutableListOf<Control>()
+        val control = Control.StatefulBuilder(CONTROL_BUTTON_ID, settingsPendingIntent)
             .setTitle(getString(R.string.settings_button_title))
             .setSubtitle(getString(R.string.settings_button_summary))
+            .setStructure(getString(R.string.structure_home))
             .setCustomIcon(Icon.createWithResource(this, R.drawable.ic_outline_settings_24))
             .setDeviceType(DeviceTypes.TYPE_SWITCH)
+            .setStatus(Control.STATUS_OK)
             .build()
         controls.add(control)
         return FlowAdapters.toFlowPublisher(Flowable.fromIterable(controls))
@@ -41,20 +48,12 @@ class ControlsService : ControlsProviderService() {
         action: ControlAction,
         consumer: Consumer<Int>
     ) {
-        val context = baseContext
         if (action is BooleanAction) {
             consumer.accept(ControlAction.RESPONSE_OK)
-            val i = Intent(this, DummyActivity::class.java)
-            val pi =
-                PendingIntent.getActivity(
-                    context,
-                    CONTROL_REQUEST_CODE,
-                    i,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            val control = Control.StatefulBuilder(CONTROL_BUTTON_ID, pi)
+            val control = Control.StatefulBuilder(CONTROL_BUTTON_ID, settingsPendingIntent)
                 .setTitle(getString(R.string.settings_button_title))
                 .setSubtitle(getString(R.string.settings_button_summary))
+                .setStructure(getString(R.string.structure_home))
                 .setCustomIcon(Icon.createWithResource(this, R.drawable.ic_outline_settings_24))
                 .setDeviceType(DeviceTypes.TYPE_SWITCH)
                 .setStatus(Control.STATUS_OK)
@@ -64,27 +63,19 @@ class ControlsService : ControlsProviderService() {
     }
 
     override fun createPublisherFor(controlIds: MutableList<String>): Flow.Publisher<Control> {
-        val context = baseContext
-        val i = Intent(this, DummyActivity::class.java)
-        val pi =
-            PendingIntent.getActivity(
-                context,
-                CONTROL_REQUEST_CODE,
-                i,
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
-        val controls = mutableListOf<Control>()
         updatePublisher = ReplayProcessor.create()
+        val controls = mutableListOf<Control>()
         if (controlIds.contains(CONTROL_BUTTON_ID)) {
-            val control = Control.StatefulBuilder(CONTROL_BUTTON_ID, pi)
+            val control = Control.StatefulBuilder(CONTROL_BUTTON_ID, settingsPendingIntent)
                 .setTitle(getString(R.string.settings_button_title))
                 .setSubtitle(getString(R.string.settings_button_summary))
+                .setStructure(getString(R.string.structure_home))
                 .setCustomIcon(Icon.createWithResource(this, R.drawable.ic_outline_settings_24))
                 .setDeviceType(DeviceTypes.TYPE_SWITCH)
                 .setStatus(Control.STATUS_OK)
                 .build()
-            controls.add(control)
             updatePublisher.onNext(control)
+            controls.add(control)
         }
         return FlowAdapters.toFlowPublisher(Flowable.fromIterable(controls))
     }

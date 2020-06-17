@@ -2,4 +2,5 @@
     <string name="app_name">Power Tiles</string>
     <string name="settings_button_title">Settings</string>
     <string name="settings_button_summary">Open system settings</string>
+    <string name="structure_home">Home</string>
 </resources>
