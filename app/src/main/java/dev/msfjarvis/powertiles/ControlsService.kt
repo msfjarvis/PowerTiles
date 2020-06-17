@@ -8,7 +8,6 @@ import android.service.controls.ControlsProviderService
 import android.service.controls.DeviceTypes
 import android.service.controls.actions.BooleanAction
 import android.service.controls.actions.ControlAction
-import android.widget.Toast
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.processors.ReplayProcessor
 import org.reactivestreams.FlowAdapters
@@ -45,7 +44,6 @@ class ControlsService : ControlsProviderService() {
         val context = baseContext
         if (action is BooleanAction) {
             consumer.accept(ControlAction.RESPONSE_OK)
-            Toast.makeText(this, "newState=${action.newState}", Toast.LENGTH_LONG).show()
             val i = Intent(this, DummyActivity::class.java)
             val pi =
                 PendingIntent.getActivity(
