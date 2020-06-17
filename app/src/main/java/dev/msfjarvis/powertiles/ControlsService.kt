@@ -2,6 +2,7 @@ package dev.msfjarvis.powertiles
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.service.controls.Control
 import android.service.controls.ControlsProviderService
 import android.service.controls.DeviceTypes
@@ -27,8 +28,9 @@ class ControlsService : ControlsProviderService() {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val control = Control.StatelessBuilder(CONTROL_BUTTON_ID, pi)
-            .setTitle("My cool button")
-            .setSubtitle("Cooler subtitle")
+            .setTitle(getString(R.string.settings_button_title))
+            .setSubtitle(getString(R.string.settings_button_summary))
+            .setCustomIcon(Icon.createWithResource(this, R.drawable.ic_outline_settings_24))
             .setDeviceType(DeviceTypes.TYPE_SWITCH)
             .build()
         controls.add(control)
@@ -53,8 +55,9 @@ class ControlsService : ControlsProviderService() {
                     PendingIntent.FLAG_UPDATE_CURRENT
                 )
             val control = Control.StatefulBuilder(CONTROL_BUTTON_ID, pi)
-                .setTitle("My cool button")
-                .setSubtitle("Cooler subtitle")
+                .setTitle(getString(R.string.settings_button_title))
+                .setSubtitle(getString(R.string.settings_button_summary))
+                .setCustomIcon(Icon.createWithResource(this, R.drawable.ic_outline_settings_24))
                 .setDeviceType(DeviceTypes.TYPE_SWITCH)
                 .setStatus(Control.STATUS_OK)
                 .build()
@@ -76,8 +79,9 @@ class ControlsService : ControlsProviderService() {
         updatePublisher = ReplayProcessor.create()
         if (controlIds.contains(CONTROL_BUTTON_ID)) {
             val control = Control.StatefulBuilder(CONTROL_BUTTON_ID, pi)
-                .setTitle("My cool button")
-                .setSubtitle("Cooler subtitle")
+                .setTitle(getString(R.string.settings_button_title))
+                .setSubtitle(getString(R.string.settings_button_summary))
+                .setCustomIcon(Icon.createWithResource(this, R.drawable.ic_outline_settings_24))
                 .setDeviceType(DeviceTypes.TYPE_SWITCH)
                 .setStatus(Control.STATUS_OK)
                 .build()
