@@ -20,7 +20,9 @@ class ControlsService : ControlsProviderService() {
     private lateinit var updatePublisher: ReplayProcessor<Control>
     private val settingsPendingIntent by lazy {
         val context: Context = baseContext
-        val i = Intent(Settings.ACTION_SETTINGS)
+        val i = Intent(Settings.ACTION_SETTINGS).apply {
+            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
         PendingIntent.getActivity(
             context,
             CONTROL_REQUEST_CODE,
