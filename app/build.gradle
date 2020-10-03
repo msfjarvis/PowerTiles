@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+
+final def keystorePropertiesFile = rootProject.file("keystore.properties")
 android {
     compileSdkVersion 30
     defaultConfig {
@@ -11,9 +13,25 @@ android {
         versionName "1.0"
     }
 
+    if (keystorePropertiesFile.exists()) {
+        final def keystoreProperties = new Properties()
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+        signingConfigs {
+            release {
+                keyAlias keystoreProperties["keyAlias"]
+                keyPassword keystoreProperties["keyPassword"]
+                storeFile rootProject.file(keystoreProperties["storeFile"])
+                storePassword keystoreProperties["storePassword"]
+            }
+        }
+        buildTypes.debug.signingConfig = signingConfigs.release
+        buildTypes.release.signingConfig = signingConfigs.release
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles rootProject.file('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
