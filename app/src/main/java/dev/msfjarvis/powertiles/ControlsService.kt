@@ -54,7 +54,7 @@ class ControlsService : ControlsProviderService() {
     }
 
     private fun setBrightness(brightness: Float) {
-        Log.d(BuildConfig.APPLICATION_ID, "newValue=%.0f".format(brightness))
+        Log.d(TAG, "newValue=%.0f".format(brightness))
     }
 
     private fun makeSettingsControl(): Control {
@@ -109,5 +109,9 @@ class ControlsService : ControlsProviderService() {
         makeDefaultControls()
         updatePublisher = ReplayProcessor.create()
         return FlowAdapters.toFlowPublisher(Flowable.fromIterable(controls.map { it.value }))
+    }
+
+    companion object {
+        private val TAG = ControlsService::class.java.simpleName
     }
 }

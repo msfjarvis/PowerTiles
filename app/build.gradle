@@ -13,8 +13,6 @@ android {
         versionName "1.0"
     }
 
-    buildFeatures.buildConfig = true
-
     if (keystorePropertiesFile.exists()) {
         final def keystoreProperties = new Properties()
         keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
